@@ -1,8 +1,11 @@
 {
-    "name": "canvas-gif-encoder",
+    "name": "@pencil.js/canvas-gif-encoder",
     "version": "0.1.2",
     "description": "Encodes an animated GIF by reading frames from a canvas.",
     "main": "src/index.js",
+    "publishConfig": {
+        "access": "public"
+    },
     "scripts": {
         "test": "ava"
     },
@@ -23,9 +26,15 @@
         "animation"
     ],
     "author": "Borna Cafuk",
+    "maintainers": [
+        "GMartigny"
+    ],
     "license": "Zlib",
     "dependencies": {},
     "homepage": "https://github.com/pencil-js/canvas-gif-encoder",
+    "bugs": {
+        "url": "https://github.com/pencil-js/canvas-gif-encoder/issues"
+    },
     "repository": {
         "type": "git",
         "url": "https://github.com/pencil-js/canvas-gif-encoder.git"

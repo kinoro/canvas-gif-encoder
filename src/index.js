@@ -39,14 +39,14 @@ const findClosestInColorTable = (color, map) => {
 
 /**
  * Turn string to their char code
- * @param {String} string -
- * @returns Array
+ * @param {String} string - Any string
+ * @returns {Array}
  */
 const tob = string => string.split("").map(c => c.charCodeAt(0));
 
 /**
  * Turn a number into it's 8bits int representation with least significant bit first
- * @param {Number} number -
+ * @param {Number} number - Any number
  * @returns {[number, number]}
  */
 const lsb = number => [number & 0xff, (number >> 8) & 0xff];
@@ -60,6 +60,12 @@ const IMAGE_INTRODUCER = tob(",");
  * @class
  */
 export default class CanvasGifEncoder {
+    /**
+     * CanvasGifEncoder constructor
+     * @param {Number} width - Width of the GIF
+     * @param {Number} height - Height of the GIF
+     * @param {*} options - Coming soon
+     */
     constructor (width, height, options = {}) {
         this.width = width;
         this.height = height;
@@ -69,6 +75,11 @@ export default class CanvasGifEncoder {
         this.flush();
     }
 
+    /**
+     * Add a new frame to the GIF
+     * @param {CanvasRenderingContext2D} context - Context from where to extract pixels
+     * @param {Number} delay - Time of wait for this frame in millisecond
+     */
     addFrame (context, delay = 1000 / 60) {
         this.skip += delay / 10;
         if (this.skip < 2) {
@@ -142,6 +153,10 @@ export default class CanvasGifEncoder {
         );
     }
 
+    /**
+     * Close the GIF
+     * @returns {Uint8Array}
+     */
     end () {
         this.stream.push(Uint8Array.of(0x3B)); // File end
         return new Uint8Array(this.stream);

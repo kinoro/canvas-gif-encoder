@@ -1,38 +1,56 @@
-# canvas-gif-encoder
+# @pencil.js/canvas-gif-encoder
 
-[![npm](https://img.shields.io/npm/v/canvas-gif-encoder.svg)](https://www.npmjs.com/package/canvas-gif-encoder)
+[![Package version](https://badgen.net/npm/v/pencil-js/canvas-gif-encoder)](https://www.npmjs.com/package/@pencil.js/canvas-gif-encoder)
 
-A package to encode animated GIFs. Input frames are provided through a canvas, and the output is provided through a `ReadStream`.
+A package to encode animated GIFs. Input frames are provided through a canvas.
 
 ## Installation
 
-Install using npm:
+    npm install @pencil.js/canvas-gif-encoder
 
-```bash
-npm i canvas-gif-encoder
+## Usage
+
+```js
+// Import the library
+import CanvasGifEncoder from "canvas-gif-encoder";
+
+// Create a new encoder
+const encoder = new CanvasGifEncoder(<width>, <height>);
+
+// Add frames one by one
+encoder.addFrame(<context>, <delay>);
+
+// Get the result file
+const gif = encoder.end();
+
+// Free memory space (This is optional but recommended)
+encoder.flush();
 ```
 
 ## Example
 
 ```js
-const CanvasGifEncoder = require('canvas-gif-encoder');
-const {createCanvas} = require('canvas');
-const fs = require('fs');
+import CanvasGifEncoder from "canvas-gif-encoder";
 
-const canvas = createCanvas(120, 120);
-const ctx = canvas.getContext('2d');
-const encoder = new CanvasGifEncoder(120, 120);
+// For Node.js
+import { createCanvas } from "canvas"; 
+const canvas = createCanvas(300, 200);
 
-let stream = fs.createWriteStream('output.gif');
-encoder.createReadStream().pipe(stream);
+// For plain JS
+const canvas = document.createElement("canvas");
+canvas.width = 300;
+canvas.height = 200;
 
-encoder.begin();
+const ctx = canvas.getContext("2d");
+const encoder = new CanvasGifEncoder(canvas.width, canvas.height);
 
-ctx.fillStyle = 'black';
+ctx.fillStyle = "black";
 ctx.fillRect(0, 0, 120, 120);
-encoder.addFrame(ctx, 250);
 
-let colors = ['white', 'yellow', 'cyan', 'lime', 'magenta', 'red', 'blue'];
+const time = 250; // 250ms
+encoder.addFrame(ctx, time);
+
+let colors = ["white", "yellow", "cyan", "lime", "magenta", "red", "blue"];
 
 for (let i = 0; i < colors.length; ++i) {
 	ctx.fillStyle = colors[i];
@@ -40,44 +58,40 @@ for (let i = 0; i < colors.length; ++i) {
 	encoder.addFrame(ctx, 250);
 }
 
-encoder.end();
+const gif = encoder.end();
+encoder.flush();
 ```
 
 ## Documentation
 
-In order to write a valid GIF file, the workflow is as follows:
+### `constructor(<width>, <height>)`
+Create an encoder with specified width and height.
 
-1. Construct an encoder using the `new` keyword
-2. Open a read stream using `createReadStream`
-3. Begin a file with `begin`
-4. Draw the desired frame on a canvas
-5. Create a frame from the canvas with `addFrame`
-6. Repeat steps 4 and 5 until you have all the frames you want
-7. End the file using `end`
+| Name | Type | Default | Comment |
+| --- | --- | --- | --- |
+|width |`Number` |required |Width of the image between 1 and 65535. |
+|height |`Number` |required |Height of the image between 1 and 65535. |
 
-### constructor(width, height, options)
-
-* width: The width of the GIF in pixels, in the range [1, 65535].
-* height: The height of the GIF in pixels, in the range [1, 65535].
-* options: _(optional)_ Currently unused.
-
-Creates an encoder of the specified width and height.
-
-### begin()
-
-Initializes the file by writing the header.
-
-### addFrame(context, delay)
-
-* context: The canvas context from which the frame is constructed.
-* delay: The length of the frame being added in milliseconds, in the range [0, 655350].
-
+### `.addFrame(<context>, <delay>)`
 Writes a frame to the file.
 
-### end()
+| Name | Type | Default | Comment |
+| --- | --- | --- | --- |
+|context |`CanvasRenderingContext2D` |required |The canvas context from which the frame is constructed. |
+|delay |`Number` |`1000 / 60` |Time in millisecond for this frame between 1 and 65535 (note that GIF delays can't be lower than 200ms and will be skipped). |
 
-Finalizes the file by writing the trailer.
+> Note that GIF delays are in centiseconds. This means that 278ms will be round to 280ms and 342ms will be round to 340ms.
 
-### createReadStream()
+> Note also that frame with a delay lower than 200ms will be skipped. Skipped delays are passed to the next sent frame.
+> This means that 10 frames of 80ms will be turn into 4 frame of 200ms.
 
-Returns a read stream to which the other methods write.
+### `.end()`
+Finalizes the file by writing the trailer and return the result.
+
+### `.flush()`
+Free up the memory taken by the GIF. This is not required, but can be useful when working with large file.
+This also mean you can start a new file with the same encoder.
+
+## License
+
+[Zlib](license.txt)
