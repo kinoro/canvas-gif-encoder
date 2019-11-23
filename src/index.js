@@ -51,26 +51,22 @@ const tob = string => string.split("").map(c => c.charCodeAt(0));
  */
 const lsb = number => [number & 0xff, (number >> 8) & 0xff];
 
+const VERSION_DESCRIPTOR = tob("GIF89a");
+const APPLICATION_NAME = tob("NETSCAPE2.0");
+const BLOCK_INTRODUCER = tob("!");
+const IMAGE_INTRODUCER = tob(",");
+
+/**
+ * @class
+ */
 export default class CanvasGifEncoder {
     constructor (width, height, options = {}) {
         this.width = width;
         this.height = height;
         this.skip = 0;
 
-        this.stream = [
-            ...tob("GIF89a"),
-            ...lsb(this.width), //     Logical screen width in pixels (little-endian)
-            ...lsb(this.height), //    Logical screen height in pixels (little-endian)
-            0x70, //                   Depth = 8 bits, no global color table
-            0x00, //                   Transparent color: 0
-            0x00, //                   Default pixel aspect ratio
-            0x21, 0xFF, 0x0B, //       Application Extension block (11 bytes for app name and code)
-            ...tob("NETSCAPE2.0"), //  NETSCAPE2.0
-            0x03, //                   3 bytes of data
-            0x01, //                   Sub-block index
-            0x00, 0x00, //             Repeat inifinitely
-            0x00, //                   End of block
-        ];
+        this.stream = null;
+        this.flush();
     }
 
     addFrame (context, delay = 1000 / 60) {
@@ -82,12 +78,12 @@ export default class CanvasGifEncoder {
         this.skip -= centi;
 
         const graphicControlExtension = Uint8Array.of(
-            ...tob("!"), //     GIF extension block introducer
-            0xF9, 0x04, //      Graphic Control Extension (4 bytes)
-            0x09, //            Restore to BG color, do not expect user input, transparent index exists
-            ...lsb(centi), //   Delay in centi-seconds (little-endian)
-            0x00, //            Color 0 is transparent
-            0x00, //            End of block
+            ...BLOCK_INTRODUCER, // GIF extension block introducer
+            0xF9, 0x04, //          Graphic Control Extension (4 bytes)
+            0x09, //                Restore to BG color, do not expect user input, transparent index exists
+            ...lsb(centi), //       Delay in centi-seconds (little-endian)
+            0x00, //                Color 0 is transparent
+            0x00, //                End of block
         );
 
         const colorTable = [undefined];
@@ -127,7 +123,7 @@ export default class CanvasGifEncoder {
         });
 
         const imageDescriptor = Uint8Array.of(
-            ...tob(","), //                             Image descriptor
+            ...IMAGE_INTRODUCER, //                     Image descriptor
             0x00, 0x00, //                              Left X coordinate of image in pixels (little-endian)
             0x00, 0x00, //                              Top Y coordinate of image in pixels (little-endian)
             ...lsb(this.width), //                      Image width in pixels (little-endian)
@@ -149,5 +145,25 @@ export default class CanvasGifEncoder {
     end () {
         this.stream.push(Uint8Array.of(0x3B)); // File end
         return new Uint8Array(this.stream);
+    }
+
+    /**
+     * Free all memory and start anew
+     */
+    flush () {
+        this.stream = [
+            ...VERSION_DESCRIPTOR,
+            ...lsb(this.width), //      Logical screen width in pixels (little-endian)
+            ...lsb(this.height), //     Logical screen height in pixels (little-endian)
+            0x70, //                    Depth = 8 bits, no global color table
+            0x00, //                    Transparent color: 0
+            0x00, //                    Default pixel aspect ratio
+            0x21, 0xFF, 0x0B, //        Application Extension block (11 bytes for app name and code)
+            ...APPLICATION_NAME, //     NETSCAPE2.0
+            0x03, //                    3 bytes of data
+            0x01, //                    Sub-block index
+            0x00, 0x00, //              Repeat inifinitely
+            0x00, //                    End of block
+        ];
     }
 }
