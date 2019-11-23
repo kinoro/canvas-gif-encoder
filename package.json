@@ -2,7 +2,7 @@
     "name": "canvas-gif-encoder",
     "version": "0.1.2",
     "description": "Encodes an animated GIF by reading frames from a canvas.",
-    "main": "index.js",
+    "main": "src/index.js",
     "scripts": {
         "test": "node test/gifTest.js"
     },
