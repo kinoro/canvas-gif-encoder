@@ -4,7 +4,12 @@
     "description": "Encodes an animated GIF by reading frames from a canvas.",
     "main": "src/index.js",
     "scripts": {
-        "test": "node test/gifTest.js"
+        "test": "ava"
+    },
+    "ava": {
+        "require": [
+            "esm"
+        ]
     },
     "eslintConfig": {
         "extends": "@gmartigny/eslint-config"
@@ -27,6 +32,9 @@
     },
     "devDependencies": {
         "@gmartigny/eslint-config": "^1.3.1",
-        "eslint": "^6.6.0"
+        "ava": "^2.4.0",
+        "canvas": "^2.6.0",
+        "eslint": "^6.6.0",
+        "esm": "^3.2.25"
     }
 }
