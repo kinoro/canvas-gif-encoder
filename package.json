@@ -1,6 +1,6 @@
 {
     "name": "@pencil.js/canvas-gif-encoder",
-    "version": "0.1.2",
+    "version": "0.2.0",
     "description": "Encodes an animated GIF by reading frames from a canvas.",
     "main": "src/index.js",
     "publishConfig": {
