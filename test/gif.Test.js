@@ -31,26 +31,39 @@ test("Animation", (t) => {
     encoder.addFrame(ctx, 250);
 
     const result = encoder.end();
-
     t.snapshot(result);
 });
 
 test("Single frame", (t) => {
-    const canvas = createCanvas(128, 128);
+    const size = [100, 150];
+    const canvas = createCanvas(...size);
     const ctx = canvas.getContext("2d");
 
-    const encoder = new CanvasGifEncoder(128, 128);
+    const encoder = new CanvasGifEncoder(...size);
 
-    for (let i = 0; i < 128; ++i) {
-        ctx.fillStyle = `rgb(255,${i * 2},${i * 2})`;
-        ctx.fillRect(0, i, 128, 1);
-    }
+    const addFrame = () => {
+        const gradient = ctx.createLinearGradient(0, 0, ...size);
+        gradient.addColorStop(0, "red");
+        gradient.addColorStop(0.5, "green");
+        gradient.addColorStop(1, "blue");
+        ctx.fillStyle = gradient;
 
-    encoder.addFrame(ctx, 250);
+        ctx.fillRect(0, 0, ...size);
 
+        encoder.addFrame(ctx, 250);
+    };
+
+    addFrame();
     const result = encoder.end();
-
     t.snapshot(result);
+
+    encoder.flush();
+    encoder.options.quality = 0;
+    addFrame();
+    const lowerQuality = encoder.end();
+    t.snapshot(lowerQuality);
+
+    t.true(lowerQuality.length < result.length);
 });
 
 test("Transparency", (t) => {
@@ -59,17 +72,22 @@ test("Transparency", (t) => {
 
     const encoder = new CanvasGifEncoder(64, 64);
 
-    ctx.fillStyle = "orange";
-    for (let i = 0; i < 16; ++i) {
-        ctx.clearRect(0, 0, 64, 64);
-        ctx.beginPath();
-        ctx.arc(16 + i * 2, 16 + i * 2, 15.5, 0, 2 * Math.PI);
-        ctx.fill();
+    const addFrame = () => {
+        ctx.fillStyle = "orange";
+        for (let i = 0; i < 16; ++i) {
+            ctx.clearRect(0, 0, 64, 64);
+            ctx.beginPath();
+            ctx.arc(16 + i * 2, 16 + i * 2, 15.5, 0, 2 * Math.PI);
+            ctx.fill();
 
-        encoder.addFrame(ctx, 62.5);
-    }
+            encoder.addFrame(ctx, 62.5);
+        }
+    };
 
-    const result = encoder.end();
+    addFrame();
+    t.snapshot(encoder.end());
 
-    t.snapshot(result);
+    encoder.flush();
+    encoder.options.alphaThreshold = 0.5;
+    t.snapshot(encoder.end());
 });

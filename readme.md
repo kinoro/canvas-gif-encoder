@@ -12,10 +12,10 @@ A package to encode animated GIFs. Input frames are provided through a canvas.
 
 ```js
 // Import the library
-import CanvasGifEncoder from "canvas-gif-encoder";
+import CanvasGifEncoder from "@pencil.js/canvas-gif-encoder";
 
 // Create a new encoder
-const encoder = new CanvasGifEncoder(<width>, <height>);
+const encoder = new CanvasGifEncoder(<width>, <height>, <options>);
 
 // Add frames one by one
 encoder.addFrame(<context>, <delay>);
@@ -30,33 +30,31 @@ encoder.flush();
 ## Example
 
 ```js
-import CanvasGifEncoder from "canvas-gif-encoder";
+import CanvasGifEncoder from "@pencil.js/canvas-gif-encoder";
 
 // For Node.js
 import { createCanvas } from "canvas"; 
 const canvas = createCanvas(300, 200);
+const ctx = canvas.getContext("2d");
 
 // For plain JS
 const canvas = document.createElement("canvas");
 canvas.width = 300;
 canvas.height = 200;
-
 const ctx = canvas.getContext("2d");
-const encoder = new CanvasGifEncoder(canvas.width, canvas.height);
+
+// Define some options
+const options = {
+    alphaThreshold: 0.1,
+    quality: 1,
+};
+const encoder = new CanvasGifEncoder(canvas.width, canvas.height, options);
 
 ctx.fillStyle = "black";
-ctx.fillRect(0, 0, 120, 120);
+ctx.fillRect(0, 0, 300, 200);
 
 const time = 250; // 250ms
 encoder.addFrame(ctx, time);
-
-let colors = ["white", "yellow", "cyan", "lime", "magenta", "red", "blue"];
-
-for (let i = 0; i < colors.length; ++i) {
-	ctx.fillStyle = colors[i];
-	ctx.fillRect(i / colors.length * 120, 0, 120 / colors.length, 120);
-	encoder.addFrame(ctx, 250);
-}
 
 const gif = encoder.end();
 encoder.flush();
@@ -64,13 +62,21 @@ encoder.flush();
 
 ## Documentation
 
-### `constructor(<width>, <height>)`
+### `constructor(<width>, <height>, <option>)`
 Create an encoder with specified width and height.
 
 | Name | Type | Default | Comment |
 | --- | --- | --- | --- |
-|width |`Number` |required |Width of the image between 1 and 65535. |
-|height |`Number` |required |Height of the image between 1 and 65535. |
+|width |`Number` |required |Width of the image between 1 and 65535 |
+|height |`Number` |required |Height of the image between 1 and 65535 |
+|options |`EncoderOptions` |(see below) |Options of the encoder |
+
+### `EncoderOptions`
+
+| Name | Type | Default | Comment |
+| --- | --- | --- | --- |
+|alphaThreshold |`Number` |`0.1` |At which point a color is considered transparent (1 always, 0 never) |
+|quality |`Number` |`1` |Control the output's quality, can speed up process and reduce file size (1 best, 0 non-existent) |
 
 ### `.addFrame(<context>, <delay>)`
 Writes a frame to the file.

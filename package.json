@@ -30,7 +30,9 @@
         "GMartigny"
     ],
     "license": "Zlib",
-    "dependencies": {},
+    "dependencies": {
+        "@seregpie/k-means": "^1.0.2"
+    },
     "homepage": "https://github.com/pencil-js/canvas-gif-encoder",
     "bugs": {
         "url": "https://github.com/pencil-js/canvas-gif-encoder/issues"
