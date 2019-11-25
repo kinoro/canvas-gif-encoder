@@ -1,6 +1,6 @@
 # @pencil.js/canvas-gif-encoder
 
-[![Package version](https://badgen.net/npm/v/pencil-js/canvas-gif-encoder)](https://www.npmjs.com/package/@pencil.js/canvas-gif-encoder)
+[![Package version](https://badgen.net/npm/v/@pencil.js/canvas-gif-encoder)](https://www.npmjs.com/package/@pencil.js/canvas-gif-encoder)
 
 A package to encode animated GIFs. Input frames are provided through a canvas.
 
