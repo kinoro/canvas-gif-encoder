@@ -1,8 +1,8 @@
 # @pencil.js/canvas-gif-encoder
 
-[![Package version](https://badgen.net/npm/v/@pencil.js/canvas-gif-encoder)](https://www.npmjs.com/package/@pencil.js/canvas-gif-encoder)
+[![Package version](https://flat.badgen.net/npm/v/@pencil.js/canvas-gif-encoder)](https://www.npmjs.com/package/@pencil.js/canvas-gif-encoder)
 
-A package to encode animated GIFs. Input frames are provided through a canvas.
+Create a GIF stream frame by frame from a canvas rendering context.
 
 ## Installation
 
@@ -35,12 +35,12 @@ import CanvasGifEncoder from "@pencil.js/canvas-gif-encoder";
 // For Node.js
 import { createCanvas } from "canvas"; 
 const canvas = createCanvas(300, 200);
-const ctx = canvas.getContext("2d");
 
-// For plain JS
+// Or for plain JS
 const canvas = document.createElement("canvas");
 canvas.width = 300;
 canvas.height = 200;
+
 const ctx = canvas.getContext("2d");
 
 // Define some options
