@@ -69,7 +69,7 @@ Create an encoder with specified width and height.
 | --- | --- | --- | --- |
 |width |`Number` |required |Width of the image between 1 and 65535 |
 |height |`Number` |required |Height of the image between 1 and 65535 |
-|options |`EncoderOptions` |(see below) |Options of the encoder |
+|options |`EncoderOptions` |([see below](#encoderoptions)) |Options of the encoder |
 
 ### `EncoderOptions`
 
@@ -84,7 +84,7 @@ Writes a frame to the file.
 | Name | Type | Default | Comment |
 | --- | --- | --- | --- |
 |context |`CanvasRenderingContext2D` |required |The canvas context from which the frame is constructed. |
-|delay |`Number` |`1000 / 60` |Time in millisecond for this frame between 1 and 65535 (note that GIF delays can't be lower than 200ms and will be skipped). |
+|delay |`Number` |`1000 / 60` |Time in millisecond for this frame between 1 and 65535. |
 
 > Note that GIF delays are in centiseconds. This means that 278ms will be round to 280ms and 342ms will be round to 340ms.
 
