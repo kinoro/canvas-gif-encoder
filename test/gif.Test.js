@@ -1,5 +1,6 @@
 import test from "ava";
 import { createCanvas } from "canvas";
+import { writeFileSync } from "fs";
 import CanvasGifEncoder from "..";
 
 test("Animation", (t) => {
@@ -32,6 +33,8 @@ test("Animation", (t) => {
 
     const result = encoder.end();
     t.snapshot(result);
+
+    writeFileSync(`./test/snapshots/${t.title.toLowerCase()}.gif`, result);
 });
 
 test("Single frame", (t) => {
@@ -55,15 +58,16 @@ test("Single frame", (t) => {
 
     addFrame();
     const result = encoder.end();
-    t.snapshot(result);
 
     encoder.flush();
-    encoder.options.quality = 0;
+    encoder.options.quality = 0.05;
     addFrame();
     const lowerQuality = encoder.end();
-    t.snapshot(lowerQuality);
 
     t.true(lowerQuality.length < result.length);
+
+    writeFileSync(`./test/snapshots/${t.title.toLowerCase()}.gif`, result);
+    writeFileSync(`./test/snapshots/${t.title.toLowerCase()}-low quality.gif`, lowerQuality);
 });
 
 test("Transparency", (t) => {
@@ -85,9 +89,12 @@ test("Transparency", (t) => {
     };
 
     addFrame();
-    t.snapshot(encoder.end());
+    const result = encoder.end();
+    t.snapshot(result);
 
     encoder.flush();
     encoder.options.alphaThreshold = 0.5;
     t.snapshot(encoder.end());
+
+    writeFileSync(`./test/snapshots/${t.title.toLowerCase()}.gif`, result);
 });
