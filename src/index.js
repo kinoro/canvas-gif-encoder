@@ -83,7 +83,7 @@ export default class CanvasGifEncoder {
 
     /**
      * Add a new frame to the GIF
-     * @param {CanvasRenderingContext2D} context - Context from where to extract pixels
+     * @param {CanvasRenderingContext2D|ImageData} context - Context from where to extract pixels or already extracted pixels
      * @param {Number} delay - Time of wait for this frame in millisecond
      */
     addFrame (context, delay = 1000 / 60) {
@@ -95,7 +95,7 @@ export default class CanvasGifEncoder {
         this.skip -= centi;
 
         const graphicControlExtension = Uint8Array.of(
-            BLOCK_INTRODUCER, // GIF extension block introducer
+            BLOCK_INTRODUCER, //    GIF extension block introducer
             0xf9, 0x04, //          Graphic Control Extension (4 bytes)
             0x09, //                Restore to BG color, do not expect user input, transparent index exists
             ...lsb(centi), //       Delay in centi-seconds (little-endian)
@@ -105,13 +105,16 @@ export default class CanvasGifEncoder {
 
         const colorTable = [];
 
-        const { data } = context.getImageData(0, 0, this.width, this.height);
-        let pixelData = new Uint32Array(this.width * this.height);
+        const { data, width, height } = typeof context.getImageData === "function" ?
+            context.getImageData(0, 0, this.width, this.height) :
+            context;
+        let pixelData = new Uint32Array(width * height);
 
-        const alphaThreshold = 256 * this.options.alphaThreshold;
+        const alphaThreshold = 0xff * this.options.alphaThreshold;
         for (let i = 0, l = data.length; i < l; i += 4) {
             let colorIndex;
-            if (data[i + 3] < alphaThreshold) { // Transparent
+            // Transparent
+            if (data[i + 3] < alphaThreshold) {
                 colorIndex = 0;
             }
             else {
@@ -128,13 +131,13 @@ export default class CanvasGifEncoder {
             pixelData[i / 4] = colorIndex;
         }
 
-        let decoded = null;
+        let decoded = colorTable.map(decodeColor);
 
         const tableMax = Math.max(1, Math.round(0xfe * Math.min(this.options.quality, 1)));
         if (colorTable.length > tableMax) {
             const replace = new Array(colorTable.length);
             replace[0] = 0; // Transparent should never be changed
-            const reduced = KMean(colorTable.map(decodeColor), tableMax);
+            const reduced = KMean(decoded, tableMax);
             decoded = reduced.map((bucket, index) => {
                 bucket.forEach((color) => {
                     const from = colorTable.indexOf(encodeColor(color)) + 1;
@@ -145,9 +148,6 @@ export default class CanvasGifEncoder {
             });
             pixelData = pixelData.map(colorIndex => replace[colorIndex]);
         }
-        else {
-            decoded = colorTable.map(decodeColor);
-        }
 
         const colorTableBits = Math.max(2, Math.ceil(Math.log2(decoded.length + 1)));
 
@@ -155,11 +155,11 @@ export default class CanvasGifEncoder {
         colorTableData.set(decoded.flat(), 3);
 
         const imageDescriptor = Uint8Array.of(
-            IMAGE_INTRODUCER, //                     Image descriptor
+            IMAGE_INTRODUCER, //                        Image descriptor
             0x00, 0x00, //                              Left X coordinate of image in pixels (little-endian)
             0x00, 0x00, //                              Top Y coordinate of image in pixels (little-endian)
-            ...lsb(this.width), //                      Image width in pixels (little-endian)
-            ...lsb(this.height), //                     Image height in pixels (little-endian)
+            ...lsb(width), //                           Image width in pixels (little-endian)
+            ...lsb(height), //                          Image height in pixels (little-endian)
             0x80 | ((colorTableBits - 1) & 0x07), //    Use a local color table, do not interlace, table is not sorted, the table indices are colorTableBits bits long
         );
 

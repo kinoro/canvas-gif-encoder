@@ -83,7 +83,7 @@ Writes a frame to the file.
 
 | Name | Type | Default | Comment |
 | --- | --- | --- | --- |
-|context |`CanvasRenderingContext2D` |required |The canvas context from which the frame is constructed. |
+|context |`CanvasRenderingContext2D|ImageData` |required |Context from where to extract pixels or already extracted pixels. |
 |delay |`Number` |`1000 / 60` |Time in millisecond for this frame between 1 and 65535. |
 
 > Note that GIF delays are in centiseconds. This means that 278ms will be round to 280ms and 342ms will be round to 340ms.
