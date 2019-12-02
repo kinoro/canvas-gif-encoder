@@ -67,7 +67,6 @@ export default class CanvasGifEncoder {
     constructor (width, height, options = {}) {
         this.width = width;
         this.height = height;
-        this.skip = 0;
 
         /**
          * @type {EncoderOptions}
@@ -78,6 +77,7 @@ export default class CanvasGifEncoder {
         };
 
         this.stream = null;
+        this.skip = null;
         this.flush();
     }
 
@@ -85,13 +85,15 @@ export default class CanvasGifEncoder {
      * Add a new frame to the GIF
      * @param {CanvasRenderingContext2D|ImageData} context - Context from where to extract pixels or already extracted pixels
      * @param {Number} delay - Time of wait for this frame in millisecond
+     * @return {Boolean} Whether this frame was added or not
      */
     addFrame (context, delay = 1000 / 60) {
         this.skip += delay / 10;
-        if (this.skip < 2) {
-            return;
+        if (this.skip <= 0) {
+            return false;
         }
-        const centi = Math.floor(this.skip);
+
+        const centi = Math.max(2, Math.round(this.skip));
         this.skip -= centi;
 
         const graphicControlExtension = Uint8Array.of(
@@ -172,6 +174,8 @@ export default class CanvasGifEncoder {
             colorTableBits,
             ...compressedPixelData,
         );
+
+        return true;
     }
 
     /**
@@ -204,5 +208,7 @@ export default class CanvasGifEncoder {
             0x00, 0x00, //              Repeat inifinitely
             0x00, //                    End of block
         ];
+
+        this.skip = 0;
     }
 }

@@ -8,28 +8,29 @@ test("Animation", (t) => {
     const ctx = canvas.getContext("2d");
 
     const encoder = new CanvasGifEncoder(64, 64);
+    const delay = 25;
 
     ctx.fillStyle = "white";
     ctx.fillRect(0, 0, 64, 64);
 
-    encoder.addFrame(ctx, 250);
+    encoder.addFrame(ctx, delay);
 
     ctx.fillStyle = "black";
     ctx.fillRect(0, 0, 32, 32);
 
-    encoder.addFrame(ctx, 250);
+    encoder.addFrame(ctx, delay);
 
     ctx.fillRect(32, 0, 32, 32);
 
-    encoder.addFrame(ctx, 250);
+    encoder.addFrame(ctx, delay);
 
     ctx.fillRect(32, 32, 32, 32);
 
-    encoder.addFrame(ctx, 250);
+    encoder.addFrame(ctx, delay);
 
     ctx.fillRect(0, 32, 32, 32);
 
-    encoder.addFrame(ctx, 250);
+    encoder.addFrame(ctx, delay * 10);
 
     const result = encoder.end();
     t.snapshot(result);
@@ -53,7 +54,7 @@ test("Single frame", (t) => {
 
         ctx.fillRect(0, 0, ...size);
 
-        encoder.addFrame(ctx, 250);
+        encoder.addFrame(ctx);
     };
 
     addFrame();

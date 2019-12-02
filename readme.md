@@ -79,7 +79,7 @@ Create an encoder with specified width and height.
 |quality |`Number` |`1` |Control the output's quality, can speed up process and reduce file size (1 best, 0 non-existent) |
 
 ### `.addFrame(<context>, <delay>)`
-Writes a frame to the file.
+Writes a frame to the file and returns a `Boolean` that tell if this was added or not.
 
 | Name | Type | Default | Comment |
 | --- | --- | --- | --- |
@@ -88,8 +88,8 @@ Writes a frame to the file.
 
 > Note that GIF delays are in centiseconds. This means that 278ms will be round to 280ms and 342ms will be round to 340ms.
 
-> Note also that frame with a delay lower than 200ms will be skipped. Skipped delays are passed to the next sent frame.
-> This means that 10 frames of 80ms will be turn into 4 frame of 200ms.
+> Note also that frame with a delay lower than 20ms will be skipped. Skipped delays are passed to the next sent frame.
+> This means that 16 frames of 10ms will be rendered as 8 frame of 20ms.
 
 ### `.end()`
 Finalizes the file by writing the trailer and return the result.
