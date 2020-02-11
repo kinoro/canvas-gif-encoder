@@ -100,4 +100,4 @@ This also mean you can start a new file with the same encoder.
 
 ## License
 
-[Zlib](license)
+[MIT](license)
