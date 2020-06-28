@@ -102,7 +102,7 @@ export default class CanvasGifEncoder {
             0x09, //                Restore to BG color, do not expect user input, transparent index exists
             ...lsb(centi), //       Delay in centi-seconds (little-endian)
             0x00, //                Color 0 is transparent
-            0x00, //                End of block
+            0x00 //                End of block
         );
 
         const colorTable = [];
@@ -162,7 +162,7 @@ export default class CanvasGifEncoder {
             0x00, 0x00, //                              Top Y coordinate of image in pixels (little-endian)
             ...lsb(width), //                           Image width in pixels (little-endian)
             ...lsb(height), //                          Image height in pixels (little-endian)
-            0x80 | ((colorTableBits - 1) & 0x07), //    Use a local color table, do not interlace, table is not sorted, the table indices are colorTableBits bits long
+            0x80 | ((colorTableBits - 1) & 0x07) //    Use a local color table, do not interlace, table is not sorted, the table indices are colorTableBits bits long
         );
 
         const compressedPixelData = compress(colorTableBits, pixelData);
@@ -172,7 +172,7 @@ export default class CanvasGifEncoder {
             ...imageDescriptor,
             ...colorTableData,
             colorTableBits,
-            ...compressedPixelData,
+            ...compressedPixelData
         );
 
         return true;
